@@ -140,36 +140,6 @@ class MarkovTests(unittest.TestCase):
         next_word = chain.next_word("Here")
         self.assertEqual(next_word, "is")
 
-    def test_suffixes(self):
-        prefix_len = 2
-        text = ("It is a far, far better thing that I do, than I have ever done;"
-                " it is a far, far better rest that I go to than I have ever known.")
-        chain = markov.MarkovChain(2)
-        chain.update(text)
-        s = chain.suffixes("It is a far, far better")
-        self.assertEqual(2, len(s))
-        self.assertTrue("thing" in s)
-        self.assertTrue("rest" in s)
-
-    def test_suffixes_short_prefix(self):
-        prefix_len = 2
-        text = ("It is a far, far better thing that I do, than I have ever done;"
-                " it is a far, far better rest that I go to than I have ever known.")
-        chain = markov.MarkovChain(2)
-        chain.update(text)
-        s = chain.suffixes("It")
-        self.assertEqual(1, len(s))
-        self.assertEqual("is", s[0])
-
-    def test_no_suffixes(self):
-        prefix_len = 2
-        text = ("It is a far, far better thing that I do, than I have ever done;"
-                " it is a far, far better rest that I go to than I have ever known.")
-        chain = markov.MarkovChain(2)
-        chain.update(text)
-        s = chain.suffixes("Bagel")
-        self.assertEqual([], s)
-
 def main():
     unittest.main()
 
