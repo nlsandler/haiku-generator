@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Chain:
 Map<Prefix -> string[]>
@@ -14,6 +13,26 @@ where a prefix is n words
 import random
 import os
 import nltk
+
+def _update_prefix(prefix_len, current_prefix, new_word):
+    """Removes first word from a prefix, and adds a new word to the end.
+    If the prefix contains fewer than prefix_len words,
+    as it will at the very beginning of the chain,
+    don't pop off the first word.
+    """
+    #split prefix into word list
+    prefix_words = current_prefix.split()
+    #if length is not less than prefix_len, remove first word
+    if len(prefix_words) == prefix_len:
+        prefix_words.pop(0)
+    elif len(prefix_words) > prefix_len:
+        raise ValueError("Prefix is too long!")
+
+    #add current word to prefix
+    prefix_words.append(new_word)
+    new_prefix = " ".join(prefix_words)
+
+    return new_prefix.strip()
 
 class MarkovChain:
     """A Markov chain of text.
@@ -37,7 +56,7 @@ class MarkovChain:
             "" : []
         }
 
-    def add_chain_start(self, text):
+    def _add_chain_start(self, text):
         """Make this text a possible start to the chain,
         but don't read in the whole thing."""
 
@@ -46,19 +65,14 @@ class MarkovChain:
         self.update(" ".join(sentence_start))
 
     def update_from_file(self, f):
-        #read in the whole thing as a single line
-        #self.update(" ".join(f.read().splitlines()))
-        #read it in again one line at a time
-        #so our generated text doesn't always start the same way
-        #f.seek(0)
-        #for line in f:
-            #self.update(line.strip())
         text = " ".join(f.read().splitlines())
         self.update(text)
-        sentences = nltk.sent_tokenize(text)
+        #make each sentence a starting point
+        #first sentence already is, so ignore it
+        sentences = nltk.sent_tokenize(text)[1:]
         for sentence in sentences:
             #make each sentence a starting point!
-            self.add_chain_start(sentence)
+            self._add_chain_start(sentence)
 
     @classmethod
     def from_files(cls, file_names, prefix_len):
@@ -67,28 +81,6 @@ class MarkovChain:
             with open(file_name, 'r') as f:
                 chain.update_from_file(f)
         return chain
-
-    def _update_prefix(self, current_prefix, new_word):
-        """Removes first word from a prefix, and adds a new word to the end.
-
-        If the prefix contains fewer than prefix_len words,
-        as it will at the very beginning of the chain,
-        return ' new_word'
-        """
-        #split prefix into word list
-        prefix_words = current_prefix.split(" ")
-
-        #if length is not less than prefix_len, remove first word
-        if len(prefix_words) == self._prefix_len:
-            prefix_words.pop(0)
-        elif len(prefix_words) > self._prefix_len:
-            raise ValueError("Prefix is too long!")
-
-        #add current word to prefix
-        prefix_words.append(new_word)
-        new_prefix = " ".join(prefix_words)
-
-        return new_prefix.strip()
 
     def update(self, text):
         """Update the chain with the provided text.
@@ -104,7 +96,7 @@ class MarkovChain:
                 self._chain[current_prefix] = []
             self._chain[current_prefix].append(word)
 
-            current_prefix = self._update_prefix(current_prefix, word)
+            current_prefix = _update_prefix(self._prefix_len, current_prefix, word)
 
     def generate(self, word_count, prefix=""):
         """Generate word_count words.
@@ -125,7 +117,7 @@ class MarkovChain:
                 break
 
             generated_words.append(word)
-            current_prefix = self._update_prefix(current_prefix, word)
+            current_prefix = _update_prefix(self._prefix_len, current_prefix, word)
 
         return " ".join(generated_words)
 

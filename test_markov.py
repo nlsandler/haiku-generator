@@ -138,7 +138,108 @@ class MarkovTests(unittest.TestCase):
         chain = markov.MarkovChain(2)
         chain.update(text)
         next_word = chain.next_word("Here")
-        self.assertEqual(next_word, "is")
+        self.assertEqual("is", next_word)
+    def test_update_prefix(self):
+        prefix = markov._update_prefix(2, "I am", "a")
+        self.assertEqual("am a", prefix)
+    def test_update_short_prefix(self):
+        prefix = markov._update_prefix(2, "I", "am")
+        self.assertEqual("I am", prefix)
+    def test_update_empty_prefix(self):
+        prefix = markov._update_prefix(2, "", "I")
+        self.assertEqual("I", prefix)
+    def test_update_prefix_with_space(self):
+        prefix = markov._update_prefix(2, " I have", "a")
+        self.assertEqual("have a", prefix)
+    def test_update_prefix_mid_space(self):
+        prefix = markov._update_prefix(2, "I  have", "a")
+        self.assertEqual("have a", prefix)
+    def test_update_prefix_end_space(self):
+        prefix = markov._update_prefix(2, "I have ", "a")
+        self.assertEqual("have a", prefix)
+    def test_add_chain_start(self):
+        """Test that a sentence is added as an entry point,
+        but no duplicates are introduced."""
+        chain = markov.MarkovChain(2)
+        chain.update("This is a sentence.")
+        chain._add_chain_start("I have some text.")
+        expected_dict = {
+            "": ["This", "I"],
+            "This": ["is"],
+            "This is": ["a"],
+            "is a": ["sentence."],
+            "I": ["have"]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+    def test_add_chain_short_prefix(self):
+        chain = markov.MarkovChain(1)
+        chain.update("This is a sentence.")
+        chain._add_chain_start("I have some text.")
+        expected_dict = {
+            "": ["This", "I"],
+            "This": ["is"],
+            "is": ["a"],
+            "a": ["sentence."]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+    def test_add_chain_long_prefix(self):
+        chain = markov.MarkovChain(3)
+        chain.update("This is a sentence.")
+        chain._add_chain_start("I have some text here.")
+        expected_dict = {
+            "": ["This", "I"],
+            "This": ["is"],
+            "This is": ["a"],
+            "This is a": ["sentence."],
+            "I": ["have"],
+            "I have": ["some"]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+    def test_update_from_file(self):
+        """Test that both sentences are entry points into the chain"""
+        chain = markov.MarkovChain(2)
+        with open("test/test0.txt","r") as f:
+            chain.update_from_file(f)
+        expected_dict = {
+            "": ["Here", "It"],
+            "Here": ["is"],
+            "It": ["is"],
+            "Here is": ["some"],
+            "is some": ["text."],
+            "some text.": ["It"],
+            "text. It": ["is"],
+            "It is": ["not"],
+            "is not": ["long."]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+    def test_update_from_file_with_newline(self):
+        chain = markov.MarkovChain(2)
+        with open("test/test1.txt","r") as f:
+            chain.update_from_file(f)
+        expected_dict = {
+            "": ["Here", "It"],
+            "Here": ["is"],
+            "It": ["is"],
+            "Here is": ["some"],
+            "is some": ["text."],
+            "some text.": ["It"],
+            "text. It": ["is"],
+            "It is": ["not"],
+            "is not": ["long."]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+    def test_from_files(self):
+        file_names = ["test/test2.txt", "test/test3.txt"]
+        prefix_len = 2
+        chain = markov.MarkovChain.from_files(file_names, prefix_len)
+        expected_dict = {
+            "": ["I","I"],
+            "I": ["am", "am"],
+            "I am": ["a", "a"],
+            "am a": ["cat!","rat."]
+        }
+        self.compare_dictionaries(expected_dict, chain._chain)
+
 
 def main():
     unittest.main()
