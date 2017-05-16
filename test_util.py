@@ -38,11 +38,11 @@ class UtilTests(unittest.TestCase):
     def test_strip_parentheses(self):
         """Remove unclosed parenthesis"""
         text = "(Parentheses"
-        self.assertEqual("Parentheses", util.strip_unbalanced_punctuation(text, "(", ")"))
+        self.assertEqual("Parentheses", util.strip_parens(text))
     def test_strip_backwards_parentheses(self):
         """Remove parentheses that are in wrong order"""
         text = ")Paren("
-        self.assertEqual("Paren", util.strip_unbalanced_punctuation(text, "(", ")"))
+        self.assertEqual("Paren", util.strip_parens(text))
     def test_strip_backwards_quotes(self):
         """Remove quotes that are in wrong order,
         using punctuation to identify opening and closing quotes"""
@@ -57,14 +57,14 @@ class UtilTests(unittest.TestCase):
         """Correctly handle closed parentheses mixed with unclosed ones."""
         text = "(It's true (but (it) might not be)"
         self.assertEqual("It's true (but (it) might not be)",
-            util.strip_unbalanced_punctuation(text,"(", ")"))
+            util.strip_parens(text))
     def test_curly_quotes(self):
         """Correctly strip curly quotes"""
         text = "“foo”"
-        self.assertEqual("“foo”", util.strip_unbalanced_punctuation(text, "“", "”"))
+        self.assertEqual("“foo”", util.strip_curly_quotes(text))
     def test_unbalanced_curly_quotes(self):
         text = "”foo”"
-        self.assertEqual("foo", util.strip_unbalanced_punctuation(text, "“", "”"))
+        self.assertEqual("foo", util.strip_curly_quotes(text))
 
 
 def main():

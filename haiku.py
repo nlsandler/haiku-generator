@@ -42,7 +42,8 @@ def generate_haiku(chain):
             #this will loop forever.
             continue
     haiku = "\n".join(haiku_lines)
-    return haiku
+    cleaned_haiku = util.strip_punctuation(haiku)
+    return cleaned_haiku
 
 if __name__ == '__main__':
     args = util.parse_args()
