@@ -38,7 +38,8 @@ class HaikuTests(unittest.TestCase):
             haiku.generate_haiku_attempt(chain)
     def test_generate_haiku_attempt(self):
         chain = markov.MarkovChain.from_files(["test/test4.txt"], 4)
-        lines = haiku.generate_haiku_attempt(chain)
+        poem = haiku.generate_haiku_attempt(chain)
+        lines = poem.split("\n")
         #validate number of lines
         self.assertEqual(3, len(lines))
         #validate number of syllables: line one

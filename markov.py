@@ -20,9 +20,8 @@ def _update_prefix(prefix_len, current_prefix, new_word):
     as it will at the very beginning of the chain,
     don't pop off the first word.
     """
-    #split prefix into word list
     prefix_words = current_prefix.split()
-    #if length is not less than prefix_len, remove first word
+    #pop off first word, unless prefix is shorter than prefix_len
     if len(prefix_words) == prefix_len:
         prefix_words.pop(0)
     elif len(prefix_words) > prefix_len:
@@ -39,7 +38,6 @@ class MarkovChain:
 
     The chain is a dictionary from a prefix to a list of words.
     Each prefix consists of prefixLen words, represented as a single string.
-    TODO: rest of docstring
     """
 
     def __init__(self, prefix_len):

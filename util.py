@@ -1,13 +1,17 @@
-import pronouncing
+from nltk.corpus import cmudict
 import string
 import argparse
 
+syllable_dict = cmudict.dict()
+
 def parse_args():
-    parser = argparse.ArgumentParser(description="Generate a haiku.")
+    parser = argparse.ArgumentParser(description="Generate a haiku using Markov chains.")
     parser.add_argument("input", default=["corpus/walden.txt"],
     nargs="*",
     help=("One or more input file(s) to use for markov text generation."
         " By default uses corpus/walden.txt."))
+    parser.add_argument("-l","--prefix-len", dest="prefix_len",
+        type=int, default=2, help="Markov chain prefix length (default is 2)")
     return parser.parse_args()
 
 def normalize(word):
@@ -15,13 +19,15 @@ def normalize(word):
 
 def in_dict(word):
     word = normalize(word)
-    phones = pronouncing.phones_for_word(word)
-    return (len(phones) > 0)
+    return (word in syllable_dict)
+
+def is_vowel(phone):
+    return any(c.isdigit() for c in phone)
 
 def get_syllable_count(word):
     word = normalize(word)
-    phones = pronouncing.phones_for_word(word)[0]
-    return len(pronouncing.stresses(phones))
+    phones = syllable_dict[word][0]
+    return len([phone for phone in phones if is_vowel(phone)])
 
 def strip_unbalanced_punctuation(text, is_open_char, is_close_char):
     """Remove unbalanced punctuation (e.g parentheses) from text"""
@@ -37,10 +43,15 @@ def strip_unbalanced_punctuation(text, is_open_char, is_close_char):
             opening_chars.append(idx)
         elif is_close_char(text, idx):
             if opening_chars:
+                #this matches a character we found earlier
                 opening_chars.pop()
             else:
+                #this doesn't match anything, so we need to remove it
                 unmatched_closing_chars.append(idx)
-    char_indices = [i for (i,_) in enumerate(text) if not(i in opening_chars or i in unmatched_closing_chars)]
+    #get all indices not in opening_chars or unmatched_closing_chars
+    char_indices = [i for (i,_) in enumerate(text)
+                    if not(i in opening_chars or i in unmatched_closing_chars)]
+    #get text defined by char_indices
     stripped_text = "".join([text[i] for i in char_indices])
     return stripped_text
 
@@ -60,7 +71,7 @@ def strip_straight_quotes(text):
             # Bar. "Foo...
             return True
         elif len(text) == idx + 1:
-            #It's the last quote in the text so assume it's closing
+            #It's the last character in the text so assume it's closing
             return False
         elif text[idx+1] in string.whitespace:
             # foo." Bar...
@@ -73,4 +84,7 @@ def strip_straight_quotes(text):
     return strip_unbalanced_punctuation(text, is_open, is_close)
 
 def strip_punctuation(text):
-    return strip_parens(strip_curly_quotes(strip_straight_quotes(text)))
+    text = strip_straight_quotes(text)
+    text = strip_curly_quotes(text)
+    text = strip_parens(text)
+    return text
