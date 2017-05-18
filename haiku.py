@@ -3,18 +3,20 @@ import markov
 import util
 import pickle
 
+
 def get_next_word(chain, seed_text, remaining_syllables):
     """Generate a word with fewer than the specified number of syllables"""
-    #try to get a valid word 100 times
+    # try to get a valid word 100 times
     for i in range(100):
         word = chain.next_word(seed_text)
-        if (util.in_dict(word)
-            and util.get_syllable_count(word) <= remaining_syllables):
-            #This word is valid
+        if (util.in_dict(word) and
+            util.get_syllable_count(word) <= remaining_syllables):
+            # This word is valid
             return word
     else:
-        #After 100 attempts, give up
+        # After 100 attempts, give up
         raise RuntimeError("Couldn't find a valid word")
+
 
 def generate_line(chain, syllable_count, previous_text=""):
     remaining_syllables = syllable_count
@@ -27,19 +29,21 @@ def generate_line(chain, syllable_count, previous_text=""):
         remaining_syllables -= util.get_syllable_count(next_word)
     return " ".join(line)
 
+
 def generate_end_line(chain, syllable_count, previous):
     """Generate a line ending with punctuation (?!.)
 
     This is a cheap way to avoid the most awkward and abrupt endings"""
 
-    #Try 100 times to generate a line with end punctuation
+    # Try 100 times to generate a line with end punctuation
     for i in range(100):
         three = generate_line(chain, 5, previous)
         if three[-1] in ".!?":
-            #last line ends with punctuation, so use it
+            # last line ends with punctuation, so use it
             return three
     else:
         raise RuntimeError("Doesn't end with punctuation!")
+
 
 def generate_haiku_attempt(chain):
     one = generate_line(chain, 5)
@@ -47,11 +51,12 @@ def generate_haiku_attempt(chain):
     three = generate_end_line(chain, 5, " ".join([one, two]))
     return "\n".join([one, two, three])
 
+
 def generate_haiku(chain):
     while True:
-        #Keep trying until we get a haiku
-        #Note that if a valid haiku cannot be produced from the text,
-        #this will loop forever
+        # Keep trying until we get a haiku
+        # Note that if a valid haiku cannot be produced from the text,
+        # this will loop forever
         try:
             haiku = generate_haiku_attempt(chain)
             break
@@ -59,6 +64,7 @@ def generate_haiku(chain):
             continue
     cleaned_haiku = util.strip_punctuation(haiku)
     return cleaned_haiku
+
 
 if __name__ == '__main__':
     args = util.parse_args()

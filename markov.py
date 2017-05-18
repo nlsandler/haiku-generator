@@ -14,6 +14,7 @@ import random
 import os
 import nltk
 
+
 def _update_prefix(prefix_len, current_prefix, new_word):
     """Removes first word from a prefix, and adds a new word to the end.
     If the prefix contains fewer than prefix_len words,
@@ -21,17 +22,18 @@ def _update_prefix(prefix_len, current_prefix, new_word):
     don't pop off the first word.
     """
     prefix_words = current_prefix.split()
-    #pop off first word, unless prefix is shorter than prefix_len
+    # pop off first word, unless prefix is shorter than prefix_len
     if len(prefix_words) == prefix_len:
         prefix_words.pop(0)
     elif len(prefix_words) > prefix_len:
         raise ValueError("Prefix is too long!")
 
-    #add current word to prefix
+    # add current word to prefix
     prefix_words.append(new_word)
     new_prefix = " ".join(prefix_words)
 
     return new_prefix.strip()
+
 
 class MarkovChain:
     """A Markov chain of text.
@@ -51,7 +53,7 @@ class MarkovChain:
 
         self._prefix_len = prefix_len
         self._chain = {
-            "" : []
+            "": []
         }
 
     def _add_chain_start(self, text):
@@ -65,11 +67,11 @@ class MarkovChain:
     def update_from_file(self, f):
         text = " ".join(f.read().splitlines())
         self.update(text)
-        #make each sentence a starting point
-        #first sentence already is, so ignore it
+        # make each sentence a starting point
+        # first sentence already is, so ignore it
         sentences = nltk.sent_tokenize(text)[1:]
         for sentence in sentences:
-            #make each sentence a starting point!
+            # make each sentence a starting point!
             self._add_chain_start(sentence)
 
     @classmethod
@@ -89,12 +91,13 @@ class MarkovChain:
         current_prefix = ""
         word_list = text.split()
         for word in word_list:
-            #add word to chain for appropriate prefix
-            if not current_prefix in self._chain:
+            # add word to chain for appropriate prefix
+            if current_prefix not in self._chain:
                 self._chain[current_prefix] = []
             self._chain[current_prefix].append(word)
 
-            current_prefix = _update_prefix(self._prefix_len, current_prefix, word)
+            current_prefix = _update_prefix(self._prefix_len,
+                                            current_prefix, word)
 
     def generate(self, word_count, prefix=""):
         """Generate word_count words.
@@ -111,11 +114,13 @@ class MarkovChain:
             if current_prefix in self._chain:
                 word = random.choice(self._chain[current_prefix])
             else:
-                #we're out of prefixes, just return what we've generated thus far
+                # we're out of prefixes,
+                # so just return what we've generated thus far
                 break
 
             generated_words.append(word)
-            current_prefix = _update_prefix(self._prefix_len, current_prefix, word)
+            current_prefix = _update_prefix(self._prefix_len,
+                                            current_prefix, word)
 
         return " ".join(generated_words)
 
