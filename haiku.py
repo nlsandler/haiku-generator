@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+"""A haiku generator."""
 import markov
 import util
 import pickle
 
 
 def get_next_word(chain, seed_text, remaining_syllables):
-    """Generate a word with fewer than the specified number of syllables"""
+    """Generate a word with fewer than the specified number of syllables."""
     # try to get a valid word 100 times
     for i in range(100):
         word = chain.next_word(seed_text)

@@ -20,12 +20,7 @@ class MarkovTests(unittest.TestCase):
             markov.MarkovChain(0)
 
     def test_build_chain(self):
-        """Constructor should generate the chain correctly.
-
-        Sample text:
-        "It is a far, far better thing that I do, than I have ever done;
-        it is a far, far better rest that I go to than I have ever known."
-        """
+        """Constructor should generate the chain correctly."""
         prefix_len = 2
         text = ("It is a far, far better thing that I do, "
                 "than I have ever done; "
