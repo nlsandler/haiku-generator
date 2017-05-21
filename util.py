@@ -8,13 +8,14 @@ syllable_dict = cmudict.dict()
 
 def parse_args():
     """Parse command line and return input filenames and prefix length."""
+    default_input = "corpus/moby_dick.txt"
     parser = argparse.ArgumentParser(
         description="Generate a haiku using Markov chains.")
-    parser.add_argument("input", default=["corpus/moby_dick.txt"],
+    parser.add_argument("input", default=[default_input],
                         nargs="*",
                         help=("One or more input file(s) to use "
                               "for markov text generation. "
-                              "By default uses corpus/walden.txt."))
+                              "By default uses ") + default_input+".")
     parser.add_argument("-l", "--prefix-len", dest="prefix_len",
                         type=int, default=2,
                         help="Markov chain prefix length (default is 2)")

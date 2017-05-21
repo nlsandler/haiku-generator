@@ -148,15 +148,15 @@ class MarkovTests(unittest.TestCase):
 
     def test_from_file(self):
         """Test that both sentences are starting points for text generation"""
-        chain = markov.MarkovChain.from_files(["test/test0.txt"], 2)
+        chain = markov.MarkovChain.from_files(["test_inputs/test0.txt"], 2)
         self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_files_with_newline(self):
-        chain = markov.MarkovChain.from_files(["test/test1.txt"], 2)
+        chain = markov.MarkovChain.from_files(["test_inputs/test1.txt"], 2)
         self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_multiple_files(self):
-        file_names = ["test/test2.txt", "test/test3.txt"]
+        file_names = ["test_inputs/test2.txt", "test_inputs/test3.txt"]
         prefix_len = 2
         chain = markov.MarkovChain.from_files(file_names, prefix_len)
         expected_dict = {
