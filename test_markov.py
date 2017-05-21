@@ -9,6 +9,19 @@ class MarkovTests(unittest.TestCase):
                  "it is a far, far better rest that I go to "
                  "than I have ever known.")
     short_text = "Here are words."
+    # This text is also the content of test0.txt and test1.txt
+    factory_text = "Here is some text. It is not long."
+    expected_factory_dict = {
+        "": ["Here", "It"],
+        "Here": ["is"],
+        "It": ["is"],
+        "Here is": ["some"],
+        "is some": ["text."],
+        "some text.": ["It"],
+        "text. It": ["is"],
+        "It is": ["not"],
+        "is not": ["long."]
+    }
 
     def _compare_dictionaries(self, expected, actual):
         for key in expected:
@@ -125,41 +138,22 @@ class MarkovTests(unittest.TestCase):
         self._compare_dictionaries(expected_dict, chain._chain)
 
     def test_add_sentences(self):
-        raise NotImplementedError()
+        chain = markov.MarkovChain(2)
+        chain._add_sentences(self.factory_text)
+        self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_string(self):
-        raise NotImplementedError
+        chain = markov.MarkovChain.from_string(self.factory_text)
+        self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_file(self):
         """Test that both sentences are starting points for text generation"""
         chain = markov.MarkovChain.from_files(["test/test0.txt"], 2)
-        expected_dict = {
-            "": ["Here", "It"],
-            "Here": ["is"],
-            "It": ["is"],
-            "Here is": ["some"],
-            "is some": ["text."],
-            "some text.": ["It"],
-            "text. It": ["is"],
-            "It is": ["not"],
-            "is not": ["long."]
-        }
-        self._compare_dictionaries(expected_dict, chain._chain)
+        self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_files_with_newline(self):
         chain = markov.MarkovChain.from_files(["test/test1.txt"], 2)
-        expected_dict = {
-            "": ["Here", "It"],
-            "Here": ["is"],
-            "It": ["is"],
-            "Here is": ["some"],
-            "is some": ["text."],
-            "some text.": ["It"],
-            "text. It": ["is"],
-            "It is": ["not"],
-            "is not": ["long."]
-        }
-        self._compare_dictionaries(expected_dict, chain._chain)
+        self._compare_dictionaries(self.expected_factory_dict, chain._chain)
 
     def test_from_multiple_files(self):
         file_names = ["test/test2.txt", "test/test3.txt"]

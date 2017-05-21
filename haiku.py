@@ -105,11 +105,10 @@ def generate_haiku(chain):
         chain (MarkovChain): Markov chain to use to generate line
     Returns:
         The generated haiku (string).
-    """"
+    """
     while True:
-        # Keep trying until we get a haiku
-        # Note that if a valid haiku cannot be produced from the text,
-        # this will loop forever
+        # NOTE: if a valid haiku can't be generated from this text,
+        # this will loop forever!
         try:
             haiku = generate_haiku_attempt(chain)
             break

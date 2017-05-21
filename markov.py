@@ -88,7 +88,7 @@ class MarkovChain:
         the chain. By re-adding just the first _prefix_len words here,
         we make it possible to start generated text with this sentence.
         """
-        words = text.split()
+        words = sentence.split()
         sentence_start = words[:self._prefix_len]
         self._update(" ".join(sentence_start))
 
@@ -147,7 +147,8 @@ class MarkovChain:
         Returns:
             The generated text, as a string
         """
-        current_prefix = prefix
+        prefix_words = current_text.split()[-self._prefix_len:]
+        current_prefix = " ".join(prefix_words)
         generated_words = []
         for i in range(word_count):
             if current_prefix in self._chain:
@@ -172,6 +173,4 @@ class MarkovChain:
         Returns:
             The next word (as a string)
         """
-        prefix_words = current_text.split()[-self._prefix_len:]
-        prefix = " ".join(prefix_words)
-        return self.generate(1, prefix=prefix)
+        return self.generate(1, current_text=current_text)

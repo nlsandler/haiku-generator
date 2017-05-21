@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import io
 import util
 import markov
 import haiku
@@ -79,7 +78,6 @@ class HaikuTests(unittest.TestCase):
                        "Then you can create",
                        "a perfect haiku using",
                        "this example text."]
-        input_file = io.StringIO(" ".join(input_lines))
         expected_haiku = "\n".join(input_lines[1:])
         chain = markov.MarkovChain.from_string(" ".join(input_lines))
         actual_haiku = haiku.generate_haiku(chain)

@@ -10,7 +10,7 @@ def parse_args():
     """Parse command line and return input filenames and prefix length."""
     parser = argparse.ArgumentParser(
         description="Generate a haiku using Markov chains.")
-    parser.add_argument("input", default=["corpus/walden.txt"],
+    parser.add_argument("input", default=["corpus/moby_dick.txt"],
                         nargs="*",
                         help=("One or more input file(s) to use "
                               "for markov text generation. "
