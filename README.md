@@ -14,12 +14,12 @@ A command-line program to generate haiku using Markov chains.
 (Source text: Moby Dick)
 
 ## Install
-You'll need to install [Python 3](https://www.python.org/downloads/). 
+You'll need to install [Python 3](https://www.python.org/downloads/). Then install the required dependencies:
 
     pip3 install -r requirements.txt
     python3 -m nltk.downloader cmudict punkt #download required nltk data
     
-If you're on OS X and these commands give you a CERTIFICATE_VERIFY_FAILED error, [read this](https://bugs.python.org/msg283984) for help fixing it.
+If you're on OS X and these commands give you a ``CERTIFICATE_VERIFY_FAILED`` error, [read this](https://bugs.python.org/msg283984) for help fixing it.
      
 ## Test
     python3 -m unittest discover
